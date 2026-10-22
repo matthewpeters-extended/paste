@@ -1,0 +1,71 @@
+import AppKit
+@preconcurrency import CoreGraphics
+import PasteCore
+
+/// Watches every key press. When the core says a Combo has Text, the key is swallowed and the Text typed;
+/// otherwise the key passes through untouched.
+@MainActor
+final class KeystrokeListener {
+    private let textFor: (Combo) -> String?
+    private var tap: CFMachPort?
+    private var swallowedKeyCodes: Set<Int64> = []
+
+    init(textFor: @escaping (Combo) -> String?) {
+        self.textFor = textFor
+    }
+
+    var isRunning: Bool { tap != nil }
+
+    /// Starts listening if the Accessibility permission allows it. Safe to call repeatedly.
+    func startIfPossible() {
+        guard tap == nil else { return }
+        let mask = CGEventMask(1 << CGEventType.keyDown.rawValue) | CGEventMask(1 << CGEventType.keyUp.rawValue)
+        let callback: CGEventTapCallBack = { _, type, event, refcon in
+            let listener = Unmanaged<KeystrokeListener>.fromOpaque(refcon!).takeUnretainedValue()
+            // The tap is on the main run loop, so this is always the main thread.
+            return MainActor.assumeIsolated { listener.handle(type: type, event: event) }
+        }
+        guard let tap = CGEvent.tapCreate(
+            tap: .cgSessionEventTap, place: .headInsertEventTap, options: .defaultTap,
+            eventsOfInterest: mask, callback: callback,
+            userInfo: Unmanaged.passUnretained(self).toOpaque()
+        ) else { return }
+        CFRunLoopAddSource(CFRunLoopGetMain(), CFMachPortCreateRunLoopSource(nil, tap, 0), .commonModes)
+        CGEvent.tapEnable(tap: tap, enable: true)
+        self.tap = tap
+    }
+
+    func stop() {
+        if let tap { CGEvent.tapEnable(tap: tap, enable: false) }
+        tap = nil
+        swallowedKeyCodes = []
+    }
+
+    private func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+        let passThrough = Unmanaged.passUnretained(event)
+
+        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
+            if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
+            return passThrough
+        }
+        if event.getIntegerValueField(.eventSourceUserData) == Typer.marker { return passThrough }
+
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+
+        if type == .keyUp {
+            // Swallow the release of a key whose press we swallowed, so the app never sees half a keystroke.
+            return swallowedKeyCodes.remove(keyCode) != nil ? nil : passThrough
+        }
+
+        guard type == .keyDown, let nsEvent = NSEvent(cgEvent: event), let combo = Combo(event: nsEvent),
+              !SecureField.isFocused, let text = textFor(combo) else { return passThrough }
+
+        swallowedKeyCodes.insert(keyCode)
+        let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
+        if !isRepeat {
+            // Type after this event is handled, so we never post from inside the tap callback.
+            DispatchQueue.main.async { Typer.type(text) }
+        }
+        return nil
+    }
+}

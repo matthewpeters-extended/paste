@@ -25,6 +25,8 @@ final class BindingsModel {
         }
     }
 
+    func text(for combo: Combo) -> String? { bindings.text(for: combo) }
+
     func isDuplicate(_ combo: Combo, excluding id: PasteCore.Binding.ID?) -> Bool {
         bindings.all.contains { $0.id != id && $0.combo == combo }
     }
