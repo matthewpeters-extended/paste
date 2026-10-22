@@ -9,6 +9,13 @@ public struct Combo: Hashable, Codable, Sendable {
         self.modifiers = modifiers
     }
 
+    /// The Combo as macOS shows it, such as "⇧⌘L".
+    public var displayString: String {
+        let symbols: [(Modifier, String)] = [(.control, "⌃"), (.option, "⌥"), (.shift, "⇧"), (.command, "⌘")]
+        let prefix = symbols.filter { modifiers.contains($0.0) }.map(\.1).joined()
+        return prefix + (key.count == 1 ? key.uppercased() : key.prefix(1).uppercased() + key.dropFirst())
+    }
+
     /// Combos macOS or nearly every app already uses. Overriding one is allowed, but the UI should warn.
     public var isSystemReserved: Bool {
         modifiers == [.command] && ["a", "c", "v", "x", "z", "w", "q", "h", "m", "s", "space", "tab"].contains(key)

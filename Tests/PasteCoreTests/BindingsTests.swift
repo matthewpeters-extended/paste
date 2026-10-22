@@ -93,3 +93,10 @@ import PasteCore
 
     #expect(bindings.text(for: paste) == "M5V 2T6")
 }
+
+@Test func aComboIsDisplayedWithModifierSymbolsInMacOSOrder() {
+    #expect(Combo(key: "l", modifiers: [.shift, .command]).displayString == "⇧⌘L")
+    #expect(Combo(key: "v", modifiers: [.command]).displayString == "⌘V")
+    #expect(Combo(key: "e", modifiers: [.control, .option, .shift, .command]).displayString == "⌃⌥⇧⌘E")
+    #expect(Combo(key: "space", modifiers: [.command]).displayString == "⌘Space")
+}
