@@ -6,7 +6,7 @@ struct PasteApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            PopoverView(model: controller.model, permission: controller.permission)
+            PopoverView(model: controller.model, permission: controller.permission, launchAtLogin: controller.launchAtLogin)
         } label: {
             Image(systemName: controller.model.isPaused ? "pause.circle" : "doc.on.clipboard")
         }

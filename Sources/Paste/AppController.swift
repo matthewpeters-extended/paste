@@ -5,6 +5,7 @@ import Foundation
 final class AppController {
     let model = BindingsModel()
     let permission = PermissionMonitor()
+    let launchAtLogin = LaunchAtLogin()
     private var listener: KeystrokeListener?
 
     init() {

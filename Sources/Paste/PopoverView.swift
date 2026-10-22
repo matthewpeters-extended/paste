@@ -4,6 +4,7 @@ import SwiftUI
 struct PopoverView: View {
     let model: BindingsModel
     let permission: PermissionMonitor
+    let launchAtLogin: LaunchAtLogin
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     @State private var editing: PasteCore.Binding?
     @State private var isAdding = false
@@ -49,6 +50,10 @@ struct PopoverView: View {
             }
 
             Divider()
+            Toggle("Launch at login", isOn: Binding(get: { launchAtLogin.isEnabled }, set: { launchAtLogin.set($0) }))
+            if let error = launchAtLogin.error {
+                Text(error).foregroundStyle(.red).font(.caption)
+            }
             Button("Quit Paste") { NSApplication.shared.terminate(nil) }
                 .frame(maxWidth: .infinity)
         }
