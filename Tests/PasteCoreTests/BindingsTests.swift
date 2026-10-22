@@ -1,5 +1,5 @@
 import Testing
-@testable import PasteCore
+import PasteCore
 
 @Test func aBoundComboReturnsItsText() throws {
     var bindings = Bindings()
