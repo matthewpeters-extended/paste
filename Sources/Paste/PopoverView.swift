@@ -1,8 +1,13 @@
+import PasteCore
 import SwiftUI
 
 struct PopoverView: View {
+    @State private var combo: Combo?
+
     var body: some View {
         VStack(spacing: 12) {
+            KeyRecorderField(combo: $combo)
+
             Text("No Bindings yet")
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, minHeight: 80)
