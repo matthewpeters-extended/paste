@@ -29,7 +29,7 @@ struct KeyRecorderField: View {
     }
 
     private var label: String {
-        if isRecording { return "Press the keys…" }
+        if isRecording { return "Press a key with ⌘ ⌥ ⌃ or ⇧…" }
         return combo?.displayString ?? "Click to record"
     }
 }
@@ -71,7 +71,7 @@ final class CaptureView: NSView {
     private func handle(_ event: NSEvent) {
         let modifiers = Self.modifiers(of: event)
         if event.keyCode == 53 && modifiers.isEmpty { return onCombo(nil) }   // Escape cancels
-        guard let key = Self.keyName(of: event) else { return }
+        guard !modifiers.isEmpty, let key = Self.keyName(of: event) else { return }   // a modifier is required
         onCombo(Combo(key: key, modifiers: modifiers))
     }
 
