@@ -1,5 +1,5 @@
-public struct Combo: Hashable, Sendable {
-    public enum Modifier: Hashable, Sendable { case command, shift, option, control }
+public struct Combo: Hashable, Codable, Sendable {
+    public enum Modifier: Hashable, Codable, Sendable { case command, shift, option, control }
 
     public let key: String
     public let modifiers: Set<Modifier>
@@ -8,9 +8,14 @@ public struct Combo: Hashable, Sendable {
         self.key = key
         self.modifiers = modifiers
     }
+
+    /// Combos macOS or nearly every app already uses. Overriding one is allowed, but the UI should warn.
+    public var isSystemReserved: Bool {
+        modifiers == [.command] && ["a", "c", "v", "x", "z", "w", "q", "h", "m", "s", "space", "tab"].contains(key)
+    }
 }
 
-public struct Binding: Sendable {
+public struct Binding: Equatable, Codable, Sendable {
     public var label: String
     public var combo: Combo
     public var text: String
@@ -31,15 +36,22 @@ public enum BindingsError: Error, Equatable, Sendable {
 public struct Bindings: Sendable {
     public var isPaused = false
 
-    private var all: [Binding] = []
+    public private(set) var all: [Binding] = []
+    private var store: (any BindingStore)?
 
     public init() {}
+
+    public init(store: any BindingStore) throws {
+        self.store = store
+        self.all = try store.load()
+    }
 
     public mutating func add(_ binding: Binding) throws {
         guard !all.contains(where: { $0.combo == binding.combo }) else {
             throw BindingsError.duplicateCombo
         }
         all.append(binding)
+        try store?.save(all)
     }
 
     public func text(for combo: Combo) -> String? {
