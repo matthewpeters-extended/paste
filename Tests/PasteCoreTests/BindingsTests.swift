@@ -51,11 +51,12 @@ import PasteCore
     let combo = Combo(key: "l", modifiers: [.command, .shift])
 
     var first = try Bindings(store: store)
-    try first.add(Binding(label: "LinkedIn", combo: combo, text: "https://linkedin.com/in/me", isEnabled: false))
+    let linkedIn = Binding(label: "LinkedIn", combo: combo, text: "https://linkedin.com/in/me", isEnabled: false)
+    try first.add(linkedIn)
 
     let reloaded = try Bindings(store: store)
 
-    #expect(reloaded.all == [Binding(label: "LinkedIn", combo: combo, text: "https://linkedin.com/in/me", isEnabled: false)])
+    #expect(reloaded.all == [linkedIn])
 }
 
 @Test func theFileBackedStoreWritesAndReadsOneLocalFile() throws {
@@ -99,4 +100,45 @@ import PasteCore
     #expect(Combo(key: "v", modifiers: [.command]).displayString == "⌘V")
     #expect(Combo(key: "e", modifiers: [.control, .option, .shift, .command]).displayString == "⌃⌥⇧⌘E")
     #expect(Combo(key: "space", modifiers: [.command]).displayString == "⌘Space")
+}
+
+@Test func removingABindingDeletesItAndPersists() throws {
+    let store = InMemoryBindingStore()
+    var bindings = try Bindings(store: store)
+    let keep = Binding(label: "Keep", combo: Combo(key: "k", modifiers: [.command]), text: "keep")
+    let drop = Binding(label: "Drop", combo: Combo(key: "d", modifiers: [.command]), text: "drop")
+    try bindings.add(keep)
+    try bindings.add(drop)
+
+    try bindings.remove(id: drop.id)
+
+    #expect(bindings.text(for: drop.combo) == nil)
+    #expect(try Bindings(store: store).all == [keep])
+}
+
+@Test func updatingABindingReplacesItAndPersists() throws {
+    let store = InMemoryBindingStore()
+    var bindings = try Bindings(store: store)
+    var postal = Binding(label: "Postal code", combo: Combo(key: "p", modifiers: [.command]), text: "M5V 2T6")
+    try bindings.add(postal)
+
+    postal.text = "K1A 0B1"
+    postal.combo = Combo(key: "p", modifiers: [.command, .shift])
+    postal.isEnabled = false
+    try bindings.update(postal)
+
+    #expect(try Bindings(store: store).all == [postal])
+}
+
+@Test func updatingToAnotherBindingsComboIsRejected() throws {
+    var bindings = Bindings()
+    let a = Binding(label: "A", combo: Combo(key: "a", modifiers: [.control]), text: "one")
+    var b = Binding(label: "B", combo: Combo(key: "b", modifiers: [.control]), text: "two")
+    try bindings.add(a)
+    try bindings.add(b)
+
+    b.combo = a.combo
+
+    #expect(throws: BindingsError.duplicateCombo) { try bindings.update(b) }
+    #expect(bindings.text(for: Combo(key: "b", modifiers: [.control])) == "two")
 }
