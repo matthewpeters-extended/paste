@@ -2,14 +2,13 @@ import SwiftUI
 
 @main
 struct PasteApp: App {
-    @State private var model = BindingsModel()
-    @State private var permission = PermissionMonitor()
+    @State private var controller = AppController()
 
     var body: some Scene {
         MenuBarExtra {
-            PopoverView(model: model, permission: permission)
+            PopoverView(model: controller.model, permission: controller.permission)
         } label: {
-            Image(systemName: model.isPaused ? "pause.circle" : "doc.on.clipboard")
+            Image(systemName: controller.model.isPaused ? "pause.circle" : "doc.on.clipboard")
         }
         .menuBarExtraStyle(.window)
     }
