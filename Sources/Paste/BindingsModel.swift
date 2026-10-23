@@ -7,6 +7,7 @@ import PasteCore
 final class BindingsModel {
     private var bindings: Bindings
     var loadError: String?
+    let fileURL = URL.applicationSupportDirectory.appending(path: "Paste/bindings.json")
 
     var all: [PasteCore.Binding] { bindings.all }
 
@@ -16,9 +17,8 @@ final class BindingsModel {
     }
 
     init() {
-        let url = URL.applicationSupportDirectory.appending(path: "Paste/bindings.json")
         do {
-            bindings = try Bindings(store: FileBindingStore(url: url))
+            bindings = try Bindings(store: FileBindingStore(url: fileURL))
         } catch {
             bindings = Bindings()
             loadError = "Couldn't read your saved Bindings, so none are shown."
