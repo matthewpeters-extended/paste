@@ -22,5 +22,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict>
 </plist>
 PLIST
-codesign --force --sign - "$APP"
+# A stable identity keeps the Accessibility permission across rebuilds (see setup-signing.sh); fall back to ad hoc.
+if security find-identity -p codesigning | grep -q "Paste Local Signing"; then
+    codesign --force --sign "Paste Local Signing" "$APP"
+else
+    echo "Note: no 'Paste Local Signing' identity; signing ad hoc. Run ./setup-signing.sh once."
+    codesign --force --sign - "$APP"
+fi
 echo "Built $APP"
