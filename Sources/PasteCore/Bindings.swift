@@ -18,10 +18,33 @@ public struct Combo: Hashable, Codable, Sendable {
         return prefix + (key.count == 1 ? key.uppercased() : key.prefix(1).uppercased() + key.dropFirst())
     }
 
-    /// Combos macOS or nearly every app already uses. Overriding one is allowed, but the UI should warn.
-    public var isSystemReserved: Bool {
-        modifiers == [.command] && ["a", "c", "v", "x", "z", "w", "q", "h", "m", "s", "space", "tab"].contains(key)
+    /// What macOS or nearly every app normally does with this Combo, or nil if it's free.
+    /// Overriding one is allowed, but the UI should say what is being overridden.
+    public var systemUse: String? {
+        if modifiers == [.command] { return Self.commandUses[key] }
+        if modifiers == [.command, .shift] { return Self.commandShiftUses[key] }
+        if modifiers == [.control, .command] { return Self.controlCommandUses[key] }
+        return nil
     }
+
+    public var isSystemReserved: Bool { systemUse != nil }
+
+    private static let commandUses: [String: String] = [
+        "a": "Select All", "b": "Bold", "c": "Copy", "f": "Find", "g": "Find Next", "h": "Hide the app",
+        "i": "Italic", "m": "Minimize the window", "n": "New", "o": "Open", "p": "Print",
+        "q": "Quit the app", "r": "Reload", "s": "Save", "t": "New tab", "u": "Underline",
+        "v": "Paste", "w": "Close the window", "x": "Cut", "z": "Undo", ",": "Open app settings",
+        "space": "Spotlight search", "tab": "Switch apps",
+    ]
+
+    private static let commandShiftUses: [String: String] = [
+        "z": "Redo", "3": "Take a screenshot", "4": "Take a screenshot", "5": "Take a screenshot",
+        "g": "Find Previous", "n": "New folder", "t": "Reopen closed tab",
+    ]
+
+    private static let controlCommandUses: [String: String] = [
+        "q": "Lock the screen", "space": "Emoji picker",
+    ]
 }
 
 public struct Binding: Equatable, Identifiable, Codable, Sendable {

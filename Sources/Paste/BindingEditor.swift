@@ -35,8 +35,8 @@ struct BindingEditor: View {
             if isDuplicate {
                 Label("Another Binding already uses \(combo?.displayString ?? "this Combo").", systemImage: "xmark.octagon.fill")
                     .foregroundStyle(.red).font(.caption)
-            } else if combo?.isSystemReserved == true {
-                Label("\(combo?.displayString ?? "") is a system shortcut. Saving will override it.", systemImage: "exclamationmark.triangle.fill")
+            } else if let combo, let use = combo.systemUse {
+                Label("\(combo.displayString) is normally “\(use)”. Saving overrides it in every app while Paste is on. Pause Paste to get it back.", systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange).font(.caption)
             }
             TextField("Text to type", text: $text, axis: .vertical)

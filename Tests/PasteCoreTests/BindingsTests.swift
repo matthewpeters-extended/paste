@@ -142,3 +142,12 @@ import PasteCore
     #expect(throws: BindingsError.duplicateCombo) { try bindings.update(b) }
     #expect(bindings.text(for: Combo(key: "b", modifiers: [.control])) == "two")
 }
+
+@Test func aCommonSystemComboSaysWhatItNormallyDoes() {
+    #expect(Combo(key: "f", modifiers: [.command]).systemUse == "Find")
+    #expect(Combo(key: "v", modifiers: [.command]).systemUse == "Paste")
+    #expect(Combo(key: "z", modifiers: [.command, .shift]).systemUse == "Redo")
+    #expect(Combo(key: "4", modifiers: [.command, .shift]).systemUse == "Take a screenshot")
+    #expect(Combo(key: "l", modifiers: [.command, .shift]).systemUse == nil)
+    #expect(Combo(key: "f", modifiers: [.command]).isSystemReserved)
+}
