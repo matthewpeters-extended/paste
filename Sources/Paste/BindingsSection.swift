@@ -5,20 +5,21 @@ import SwiftUI
 struct BindingsSection: View {
     let model: BindingsModel
     var title = "Paste"
+    /// The popover shows the title and Pause switch here; the Settings window shows them as its own card row.
+    var showsHeader = true
     @State private var editing: PasteCore.Binding?
     @State private var isAdding = false
     @State private var actionError: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(title).font(.headline)
-                Spacer()
-                Toggle("Pause all", isOn: Bindable(model).isPaused).toggleStyle(.switch)
-            }
-            if model.isPaused {
-                Label("Paused: every key works normally. Turn off Pause all to use your Bindings.", systemImage: "pause.circle.fill")
-                    .font(.caption).foregroundStyle(.orange)
+            if showsHeader {
+                HStack {
+                    Text(title).font(.headline)
+                    Spacer()
+                    Toggle("Pause all", isOn: Bindable(model).isPaused).toggleStyle(.switch)
+                }
+                if model.isPaused { PausedNotice() }
             }
 
             if let error = model.loadError ?? actionError {
@@ -76,5 +77,12 @@ struct BindingsSection: View {
 
     private func attempt(_ action: () throws -> Void) {
         do { try action(); actionError = nil } catch { actionError = "Couldn't save: \(error.localizedDescription)" }
+    }
+}
+
+struct PausedNotice: View {
+    var body: some View {
+        Label("Paused: every key works normally. Turn off Pause all to use your Bindings.", systemImage: "pause.circle.fill")
+            .font(.caption).foregroundStyle(.orange)
     }
 }
