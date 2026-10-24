@@ -15,6 +15,6 @@ struct PasteApp: App {
         Window("Paste Settings", id: "settings") {
             SettingsView(model: controller.model, permission: controller.permission, launchAtLogin: controller.launchAtLogin)
         }
-        .windowResizability(.contentSize)
+        .windowResizability(.contentMinSize)
     }
 }
