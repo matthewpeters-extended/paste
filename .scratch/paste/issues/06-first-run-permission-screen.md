@@ -4,7 +4,7 @@
 
 **Blocked by:** 03: Menu bar app shell.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] First launch shows the explanation screen
 - [ ] The link opens the correct System Settings pane

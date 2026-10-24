@@ -1,6 +1,6 @@
 # Paste: spec
 
-Status: ready-for-agent
+Status: implemented
 
 ## Problem Statement
 

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] A bound Combo returns its Text
 - [ ] A switched-off Binding returns nothing

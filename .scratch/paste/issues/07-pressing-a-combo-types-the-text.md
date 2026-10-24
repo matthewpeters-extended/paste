@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Core: saving to a local file and system-Combo warning; 06: First-run permission screen.
 
-**Status:** ready-for-agent
+**Status:** built; manual checks pending (see checklist below)
 
 - [ ] A bound Combo types its Text in another app
 - [ ] The clipboard is unchanged afterward

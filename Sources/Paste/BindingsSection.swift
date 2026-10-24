@@ -14,7 +14,11 @@ struct BindingsSection: View {
             HStack {
                 Text(title).font(.headline)
                 Spacer()
-                Toggle("Pause", isOn: Bindable(model).isPaused).toggleStyle(.switch)
+                Toggle("Pause all", isOn: Bindable(model).isPaused).toggleStyle(.switch)
+            }
+            if model.isPaused {
+                Label("Paused: every key works normally. Turn off Pause all to use your Bindings.", systemImage: "pause.circle.fill")
+                    .font(.caption).foregroundStyle(.orange)
             }
 
             if let error = model.loadError ?? actionError {

@@ -4,7 +4,7 @@
 
 **Blocked by:** 01: Core: Bindings, Pause and duplicate rejection.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Bindings survive a save and reload (tested with the in-memory store)
 - [ ] The file-backed store writes and reads one local file
