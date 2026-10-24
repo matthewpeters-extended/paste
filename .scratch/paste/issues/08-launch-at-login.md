@@ -4,7 +4,7 @@
 
 **Blocked by:** 03: Menu bar app shell.
 
-**Status:** ready-for-agent
+**Status:** built; manual checks pending (see checklist below)
 
 - [ ] After logging out and in, Paste is running in the menu bar
 - [ ] The setting can be turned off

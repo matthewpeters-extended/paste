@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Core: saving to a local file and system-Combo warning; 04: Key recorder field.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Add, edit and delete a Binding with label, Combo and Text
 - [ ] Per-Binding on/off switch

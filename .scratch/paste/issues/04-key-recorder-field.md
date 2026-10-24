@@ -4,7 +4,7 @@
 
 **Blocked by:** 03: Menu bar app shell.
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] Focusing the field and pressing keys shows the captured Combo
 - [ ] Command+V and Command+C can be captured

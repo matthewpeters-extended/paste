@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** done
 
 - [ ] The build script produces a launchable `.app`
 - [ ] The menu bar icon appears and there is no Dock icon
