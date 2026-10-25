@@ -1,14 +1,17 @@
 import AppKit
 @preconcurrency import CoreGraphics
+import Observation
 import PasteCore
 
 /// Watches every key press. When the core says a Combo has Text, the key is swallowed and the Text typed;
 /// otherwise the key passes through untouched.
 @MainActor
+@Observable
 final class KeystrokeListener {
-    private let textFor: (Combo) -> String?
+    @ObservationIgnored private let textFor: (Combo) -> String?
     private var tap: CFMachPort?
-    private var swallowedKeyCodes: Set<Int64> = []
+    // Kept across stop/start, so a key held through a restart still has its release swallowed.
+    @ObservationIgnored private var swallowedKeyCodes: Set<Int64> = []
 
     init(textFor: @escaping (Combo) -> String?) {
         self.textFor = textFor
@@ -36,9 +39,10 @@ final class KeystrokeListener {
     }
 
     func stop() {
-        if let tap { CGEvent.tapEnable(tap: tap, enable: false) }
-        tap = nil
-        swallowedKeyCodes = []
+        guard let tap else { return }
+        CGEvent.tapEnable(tap: tap, enable: false)
+        CFMachPortInvalidate(tap)
+        self.tap = nil
     }
 
     private func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {

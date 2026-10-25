@@ -6,14 +6,14 @@ struct PasteApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            PopoverView(model: controller.model, permission: controller.permission)
+            PopoverView(model: controller.model, permission: controller.permission, listener: controller.listener)
         } label: {
             MenuBarIcon(model: controller.model)
         }
         .menuBarExtraStyle(.window)
 
         Window("Paste Settings", id: "settings") {
-            SettingsView(model: controller.model, permission: controller.permission, launchAtLogin: controller.launchAtLogin)
+            SettingsView(model: controller.model, permission: controller.permission, listener: controller.listener, launchAtLogin: controller.launchAtLogin)
         }
         .windowResizability(.contentMinSize)
         .defaultLaunchBehavior(.suppressed)

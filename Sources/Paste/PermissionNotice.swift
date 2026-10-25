@@ -16,3 +16,14 @@ struct PermissionNotice: View {
         .background(.orange.opacity(0.15), in: ConcentricRectangle())
     }
 }
+
+/// Shown when Accessibility is allowed but Paste still couldn't start listening for keys. Paste keeps retrying.
+struct ListenerProblemNotice: View {
+    var body: some View {
+        Label("Paste can't listen for keys right now, so your Bindings won't fire. It keeps retrying. If this stays, remove Paste from the Accessibility list, add it again and reopen Paste.", systemImage: "exclamationmark.triangle.fill")
+            .font(.caption).foregroundStyle(.orange)
+            .padding(8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.orange.opacity(0.15), in: ConcentricRectangle())
+    }
+}

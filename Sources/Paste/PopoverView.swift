@@ -4,6 +4,7 @@ import SwiftUI
 struct PopoverView: View {
     let model: BindingsModel
     let permission: PermissionMonitor
+    let listener: KeystrokeListener
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     @Environment(\.openWindow) private var openWindow
 
@@ -16,6 +17,7 @@ struct PopoverView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if !permission.isGranted { PermissionNotice(permission: permission) }
+            else if !listener.isRunning { ListenerProblemNotice() }
 
             BindingsSection(model: model)
 

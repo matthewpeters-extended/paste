@@ -8,7 +8,8 @@ import Observation
 final class PermissionMonitor {
     private(set) var isGranted = AXIsProcessTrusted()
     private var timer: Timer?
-    var onChange: ((Bool) -> Void)?
+    /// Called every second with the current permission state, so the owner can start or retry whatever depends on it.
+    var onTick: ((Bool) -> Void)?
 
     init() {
         // There's no notification for this change, so poll cheaply. It lets the notice vanish as soon as it's granted.
@@ -19,10 +20,8 @@ final class PermissionMonitor {
 
     func refresh() {
         let granted = AXIsProcessTrusted()
-        if granted != isGranted {
-            isGranted = granted
-            onChange?(granted)
-        }
+        if granted != isGranted { isGranted = granted }
+        onTick?(granted)
     }
 
     /// Adds Paste to the Accessibility list (so it can be ticked) and opens that Settings pane.

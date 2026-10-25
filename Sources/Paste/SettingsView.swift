@@ -19,6 +19,7 @@ enum SettingsPage: String, CaseIterable, Identifiable {
 struct SettingsView: View {
     let model: BindingsModel
     let permission: PermissionMonitor
+    let listener: KeystrokeListener
     let launchAtLogin: LaunchAtLogin
     @State private var page: SettingsPage? = .bindings
 
@@ -35,6 +36,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     Text((page ?? .bindings).rawValue).font(.largeTitle.bold())
                     if !permission.isGranted && page != .privacy { PermissionNotice(permission: permission) }
+                    else if permission.isGranted && !listener.isRunning { ListenerProblemNotice() }
                     content(for: page ?? .bindings)
                 }
                 .frame(maxWidth: 640, alignment: .leading)

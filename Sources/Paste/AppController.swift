@@ -6,12 +6,14 @@ final class AppController {
     let model = BindingsModel()
     let permission = PermissionMonitor()
     let launchAtLogin = LaunchAtLogin()
-    private var listener: KeystrokeListener?
+    let listener: KeystrokeListener
 
     init() {
-        let listener = KeystrokeListener { [model] combo in model.text(for: combo) }
+        let model = model
+        let listener = KeystrokeListener { combo in model.text(for: combo) }
         self.listener = listener
-        permission.onChange = { granted in
+        // Every tick: while permission is granted keep trying to listen (so a failed start recovers), otherwise stop.
+        permission.onTick = { granted in
             if granted { listener.startIfPossible() } else { listener.stop() }
         }
         if permission.isGranted { listener.startIfPossible() }

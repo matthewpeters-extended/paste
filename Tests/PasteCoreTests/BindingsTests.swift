@@ -151,3 +151,12 @@ import PasteCore
     #expect(Combo(key: "l", modifiers: [.command, .shift]).systemUse == nil)
     #expect(Combo(key: "f", modifiers: [.command]).isSystemReserved)
 }
+
+@Test func textIsSplitIntoTypedTextAndReturnPresses() {
+    #expect(TypingStep.steps(for: "M5V 2T6") == [.text("M5V 2T6")])
+    #expect(TypingStep.steps(for: "Dear Sam,\nThanks!") == [.text("Dear Sam,"), .newline, .text("Thanks!")])
+    #expect(TypingStep.steps(for: "a\r\nb") == [.text("a"), .newline, .text("b")])
+    #expect(TypingStep.steps(for: "a\n\nb") == [.text("a"), .newline, .newline, .text("b")])
+    #expect(TypingStep.steps(for: "line\n") == [.text("line"), .newline])
+    #expect(TypingStep.steps(for: "") == [])
+}
