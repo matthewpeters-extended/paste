@@ -57,8 +57,9 @@ final class KeystrokeListener {
             return swallowedKeyCodes.remove(keyCode) != nil ? nil : passThrough
         }
 
+        // Look the Combo up first. The password-field check is a slow system-wide call, so it only runs for a key that is bound.
         guard type == .keyDown, let nsEvent = NSEvent(cgEvent: event), let combo = Combo(event: nsEvent),
-              !SecureField.isFocused, let text = textFor(combo) else { return passThrough }
+              let text = textFor(combo), !SecureField.isFocused else { return passThrough }
 
         swallowedKeyCodes.insert(keyCode)
         let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0

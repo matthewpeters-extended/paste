@@ -23,7 +23,8 @@ extension Combo {
 
     static func keyName(of event: NSEvent) -> String? {
         if let named = namedKeys[event.keyCode] { return named }
-        guard let chars = event.charactersIgnoringModifiers?.lowercased(), chars.count == 1 else { return nil }
+        // Name the key as if no modifiers were held, so Shift+3 is "3" (not "#") and matches the system-Combo list.
+        guard let chars = event.characters(byApplyingModifiers: [])?.lowercased(), chars.count == 1 else { return nil }
         return chars
     }
 }

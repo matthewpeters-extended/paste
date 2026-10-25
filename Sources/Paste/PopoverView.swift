@@ -7,23 +7,14 @@ struct PopoverView: View {
     @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
     @Environment(\.openWindow) private var openWindow
 
-    var body: some View {
-        if hasSeenWelcome {
-            main
-        } else {
-            VStack(alignment: .leading, spacing: 12) {
-                PermissionScreen(permission: permission) { hasSeenWelcome = true }
-                Divider()
-                Button("Quit Paste") { NSApplication.shared.terminate(nil) }
-                    .frame(maxWidth: .infinity)
-            }
-            .padding(12)
-            .frame(width: 320)
-        }
-    }
+    var body: some View { main }
 
     private var main: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if !hasSeenWelcome {
+                Button("Finish setting up Paste", systemImage: "sparkles") { openWelcome() }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if !permission.isGranted { PermissionNotice(permission: permission) }
 
             BindingsSection(model: model)
@@ -35,6 +26,12 @@ struct PopoverView: View {
         .padding(12)
         .frame(width: 320)
         .containerShape(.rect(cornerRadius: 24))
+    }
+
+    private func openWelcome() {
+        NSApp.keyWindow?.close()
+        openWindow(id: "welcome")
+        NSApp.activate()
     }
 
     private func openSettings() {

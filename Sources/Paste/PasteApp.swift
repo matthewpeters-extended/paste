@@ -8,7 +8,7 @@ struct PasteApp: App {
         MenuBarExtra {
             PopoverView(model: controller.model, permission: controller.permission)
         } label: {
-            Image(systemName: controller.model.isPaused ? "pause.circle" : "doc.on.clipboard")
+            MenuBarIcon(model: controller.model)
         }
         .menuBarExtraStyle(.window)
 
@@ -16,5 +16,28 @@ struct PasteApp: App {
             SettingsView(model: controller.model, permission: controller.permission, launchAtLogin: controller.launchAtLogin)
         }
         .windowResizability(.contentMinSize)
+        .defaultLaunchBehavior(.suppressed)
+
+        Window("Welcome to Paste", id: "welcome") {
+            OnboardingView(permission: controller.permission, launchAtLogin: controller.launchAtLogin)
+        }
+        .windowResizability(.contentSize)
+        .defaultLaunchBehavior(.suppressed)
+    }
+}
+
+/// The menu bar icon. It is on screen from launch, so it is also where the first-run welcome window gets opened.
+private struct MenuBarIcon: View {
+    let model: BindingsModel
+    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Image(systemName: model.isPaused ? "pause.circle" : "doc.on.clipboard")
+            .onAppear {
+                guard !hasSeenWelcome else { return }
+                openWindow(id: "welcome")
+                NSApp.activate()
+            }
     }
 }

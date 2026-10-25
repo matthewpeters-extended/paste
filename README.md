@@ -2,17 +2,35 @@
 
 A macOS menu bar app that types your saved text when you press a key combination, in any app. Everything is stored in one local file and the app never uses the network. See `CONTEXT.md` for the vocabulary (Binding, Combo, Text, Pause) and `.scratch/paste/spec.md` for the spec.
 
-## Build and run
+## Get started
 
 Needs macOS 26 and the Swift toolchain (Command Line Tools are enough).
 
 ```sh
-./setup-signing.sh   # once: creates a local signing certificate so the Accessibility permission survives rebuilds
-./build-app.sh       # builds build/Paste.app
-open build/Paste.app
+git clone https://github.com/matthewpeters-extended/paste.git && cd paste
+./setup-signing.sh               # once: a local signing certificate, so the Accessibility permission survives rebuilds
+./build-app.sh                   # builds build/Paste.app
+cp -R build/Paste.app /Applications/
+open /Applications/Paste.app
 ```
 
-On first launch Paste asks for the **Accessibility** permission (System Settings → Privacy & Security → Accessibility).
+macOS may ask whether `codesign` can use the signing key. Choose **Always Allow**.
+
+On first launch a **Welcome** window opens and walks you through setup:
+
+1. **Allow Accessibility.** This is the only permission Paste needs.
+2. **Choose whether Paste starts at login.**
+3. **Add your first Binding** from the menu bar icon.
+
+## Permissions
+
+| Permission | Needed? | Why |
+|---|---|---|
+| Accessibility (System Settings → Privacy & Security → Accessibility) | Yes | Lets Paste notice your key combinations in other apps and type the text for you. |
+| Login item | Optional | Only if you choose to launch at login. macOS may show a one-time "Paste can run in the background" notice. |
+| Input Monitoring, Screen Recording, Network | No | Paste doesn't use them. It never connects to the internet and never touches your clipboard. |
+
+If you rebuild without the signing certificate, macOS may treat each build as a new app. If the Accessibility notice stays after you allowed Paste, remove Paste from the list with **−**, reopen the app and allow it again. Paste doesn't type into password fields.
 
 ## Test
 
