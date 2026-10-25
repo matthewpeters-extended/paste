@@ -29,11 +29,8 @@ struct PopoverView: View {
             BindingsSection(model: model)
 
             Divider()
-            HStack {
-                Button("Settings", systemImage: "gearshape") { openSettings() }
-                Spacer()
-                Button("Quit Paste") { NSApplication.shared.terminate(nil) }
-            }
+            Button("Settings", systemImage: "gearshape") { openSettings() }
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(12)
         .frame(width: 320)
