@@ -18,7 +18,7 @@ final class PermissionMonitor {
         }
     }
 
-    func refresh() {
+    private func refresh() {
         let granted = AXIsProcessTrusted()
         if granted != isGranted { isGranted = granted }
         onTick?(granted)

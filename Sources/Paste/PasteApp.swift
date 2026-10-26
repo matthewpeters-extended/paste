@@ -29,7 +29,7 @@ struct PasteApp: App {
 /// The menu bar icon. It is on screen from launch, so it is also where the first-run welcome window gets opened.
 private struct MenuBarIcon: View {
     let model: BindingsModel
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    @AppStorage(DefaultsKey.hasSeenWelcome) private var hasSeenWelcome = false
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {

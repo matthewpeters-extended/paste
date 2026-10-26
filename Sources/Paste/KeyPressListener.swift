@@ -7,7 +7,7 @@ import PasteCore
 /// otherwise the key passes through untouched.
 @MainActor
 @Observable
-final class KeystrokeListener {
+final class KeyPressListener {
     @ObservationIgnored private let textFor: (Combo) -> String?
     private var tap: CFMachPort?
     // Kept across stop/start, so a key held through a restart still has its release swallowed.
@@ -24,7 +24,7 @@ final class KeystrokeListener {
         guard tap == nil else { return }
         let mask = CGEventMask(1 << CGEventType.keyDown.rawValue) | CGEventMask(1 << CGEventType.keyUp.rawValue)
         let callback: CGEventTapCallBack = { _, type, event, refcon in
-            let listener = Unmanaged<KeystrokeListener>.fromOpaque(refcon!).takeUnretainedValue()
+            let listener = Unmanaged<KeyPressListener>.fromOpaque(refcon!).takeUnretainedValue()
             // The tap is on the main run loop, so this is always the main thread.
             return MainActor.assumeIsolated { listener.handle(type: type, event: event) }
         }
@@ -57,13 +57,13 @@ final class KeystrokeListener {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
 
         if type == .keyUp {
-            // Swallow the release of a key whose press we swallowed, so the app never sees half a keystroke.
+            // Swallow the release of a key whose press we swallowed, so the app never sees half a key press.
             return swallowedKeyCodes.remove(keyCode) != nil ? nil : passThrough
         }
 
         // Look the Combo up first. The password-field check is a slow system-wide call, so it only runs for a key that is bound.
         guard type == .keyDown, let nsEvent = NSEvent(cgEvent: event), let combo = Combo(event: nsEvent),
-              let text = textFor(combo), !SecureField.isFocused else { return passThrough }
+              let text = textFor(combo), !PasswordField.isFocused else { return passThrough }
 
         swallowedKeyCodes.insert(keyCode)
         let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0

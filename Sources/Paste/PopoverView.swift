@@ -4,8 +4,8 @@ import SwiftUI
 struct PopoverView: View {
     let model: BindingsModel
     let permission: PermissionMonitor
-    let listener: KeystrokeListener
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    let listener: KeyPressListener
+    @AppStorage(DefaultsKey.hasSeenWelcome) private var hasSeenWelcome = false
     @Environment(\.openWindow) private var openWindow
 
     var body: some View { main }
@@ -18,6 +18,13 @@ struct PopoverView: View {
             }
             if !permission.isGranted { PermissionNotice(permission: permission) }
             else if !listener.isRunning { ListenerProblemNotice() }
+
+            HStack {
+                Text("Paste").font(.headline)
+                Spacer()
+                Toggle("Pause all", isOn: Bindable(model).isPaused).toggleStyle(.switch)
+            }
+            if model.isPaused { PausedNotice() }
 
             BindingsSection(model: model)
 

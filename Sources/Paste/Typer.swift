@@ -35,7 +35,7 @@ enum Typer {
     private static func post(virtualKey: CGKeyCode, characters: [UniChar]?, source: CGEventSource?) {
         for isDown in [true, false] {
             guard let event = CGEvent(keyboardEventSource: source, virtualKey: virtualKey, keyDown: isDown) else { continue }
-            event.flags = []   // the Combo's modifier keys may still be held; don't let them turn this into a shortcut
+            event.flags = []   // the Combo's modifier keys may still be held; don't let them turn this into a different Combo
             if let characters { event.keyboardSetUnicodeString(stringLength: characters.count, unicodeString: characters) }
             event.post(tap: .cgSessionEventTap)
         }

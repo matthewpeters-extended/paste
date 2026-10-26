@@ -1,27 +1,15 @@
 import PasteCore
 import SwiftUI
 
-/// The Pause switch, the Bindings list and the add/edit form. Shared by the popover and the Settings window.
+/// The Bindings list and the add/edit form. Shared by the popover and the Settings window.
 struct BindingsSection: View {
     let model: BindingsModel
-    var title = "Paste"
-    /// The popover shows the title and Pause switch here; the Settings window shows them as its own card row.
-    var showsHeader = true
     @State private var editing: PasteCore.Binding?
     @State private var isAdding = false
     @State private var actionError: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if showsHeader {
-                HStack {
-                    Text(title).font(.headline)
-                    Spacer()
-                    Toggle("Pause all", isOn: Bindable(model).isPaused).toggleStyle(.switch)
-                }
-                if model.isPaused { PausedNotice() }
-            }
-
             if let error = model.loadError ?? actionError {
                 Text(error).foregroundStyle(.red).font(.caption)
             }

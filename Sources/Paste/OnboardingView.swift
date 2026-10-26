@@ -4,7 +4,7 @@ import SwiftUI
 struct OnboardingView: View {
     let permission: PermissionMonitor
     let launchAtLogin: LaunchAtLogin
-    @AppStorage("hasSeenWelcome") private var hasSeenWelcome = false
+    @AppStorage(DefaultsKey.hasSeenWelcome) private var hasSeenWelcome = false
     @Environment(\.dismiss) private var dismiss
     @State private var startAtLogin = true
 
@@ -55,7 +55,7 @@ struct OnboardingView: View {
     }
 
     private func finish() {
-        launchAtLogin.set(startAtLogin)
+        launchAtLogin.setEnabled(startAtLogin)
         hasSeenWelcome = true
         dismiss()
     }

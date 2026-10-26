@@ -1,8 +1,8 @@
 import ApplicationServices
 import Carbon.HIToolbox
 
-/// Whether keystrokes are going into a password field, where Paste must stay out of the way.
-enum SecureField {
+/// Whether key presses are going into a password field, where Paste must stay out of the way.
+enum PasswordField {
     static var isFocused: Bool {
         if IsSecureEventInputEnabled() { return true }
         let system = AXUIElementCreateSystemWide()

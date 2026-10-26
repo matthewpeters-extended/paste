@@ -19,16 +19,16 @@ enum SettingsPage: String, CaseIterable, Identifiable {
 struct SettingsView: View {
     let model: BindingsModel
     let permission: PermissionMonitor
-    let listener: KeystrokeListener
+    let listener: KeyPressListener
     let launchAtLogin: LaunchAtLogin
     @State private var page: SettingsPage? = .bindings
 
     var body: some View {
         NavigationSplitView {
             List(selection: $page) {
-                Section("Use") { link(.bindings) }
-                Section("General") { link(.general); link(.privacy) }
-                Section("About") { link(.account) }
+                Section("Use") { sidebarRow(.bindings) }
+                Section("General") { sidebarRow(.general); sidebarRow(.privacy) }
+                Section("About") { sidebarRow(.account) }
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 240)
         } detail: {
@@ -47,7 +47,7 @@ struct SettingsView: View {
         .frame(minWidth: 760, minHeight: 520)
     }
 
-    private func link(_ page: SettingsPage) -> some View {
+    private func sidebarRow(_ page: SettingsPage) -> some View {
         Label(page.rawValue, systemImage: page.icon).tag(page)
     }
 
@@ -72,7 +72,7 @@ struct SettingsView: View {
             if model.isPaused { PausedNotice() }
 
             SettingsGroup("Your Bindings", footer: "A Binding types its Text when you press its Combo in any app, as long as its switch is on and Pause all is off.") {
-                BindingsSection(model: model, showsHeader: false)
+                BindingsSection(model: model)
                     .padding(14)
             }
         }
@@ -81,7 +81,7 @@ struct SettingsView: View {
     private var generalPage: some View {
         SettingsGroup("Startup") {
             SettingsRow("Launch Paste at login", detail: "Start Paste automatically when you log in, so your Bindings always work.") {
-                Toggle("Launch Paste at login", isOn: Binding(get: { launchAtLogin.isEnabled }, set: { launchAtLogin.set($0) }))
+                Toggle("Launch Paste at login", isOn: Binding(get: { launchAtLogin.isEnabled }, set: { launchAtLogin.setEnabled($0) }))
                     .labelsHidden().toggleStyle(.switch)
             }
             if let error = launchAtLogin.error {
@@ -126,60 +126,5 @@ struct SettingsView: View {
                 }
             }
         }
-    }
-}
-
-// MARK: Building blocks
-
-/// A titled card of rows, like a System Settings group.
-struct SettingsGroup<Content: View>: View {
-    let title: String
-    let footer: String?
-    @ViewBuilder let content: Content
-
-    init(_ title: String, footer: String? = nil, @ViewBuilder content: () -> Content) {
-        self.title = title
-        self.footer = footer
-        self.content = content()
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title).font(.title3.weight(.semibold))
-            VStack(spacing: 0) { content }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.separator))
-            if let footer {
-                Text(footer).font(.caption).foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-struct SettingsRow<Trailing: View>: View {
-    let title: String
-    let detail: String?
-    @ViewBuilder let trailing: Trailing
-
-    init(_ title: String, detail: String? = nil, @ViewBuilder trailing: () -> Trailing) {
-        self.title = title
-        self.detail = detail
-        self.trailing = trailing()
-    }
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                if let detail {
-                    Text(detail).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)
-                }
-            }
-            Spacer(minLength: 12)
-            trailing
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
     }
 }
